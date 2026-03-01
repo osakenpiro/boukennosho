@@ -553,6 +553,7 @@ input[type=range]{width:100%;accent-color:var(--gold);cursor:pointer;height:22px
       <span class="fp7">Lv.<span id="tb-lv" class="c-gold" style="font-size:10px">1</span></span>
       <span class="fp7 c-gray" id="tb-badge">冒険者</span>
       <button class="btn btn-ghost" style="font-size:10px;padding:4px 8px;min-height:28px;border-color:rgba(64,160,255,.4);color:#4080c0" onclick="openSteam()">Steam</button>
+      <button class="btn btn-ghost" style="font-size:10px;padding:4px 8px;min-height:28px;border-color:rgba(248,200,0,.3);color:var(--gold)" onclick="shareQuest()">𝕏 シェア</button>
     </div>
   </div>
   <div class="party-strip" id="party-strip">
@@ -673,6 +674,9 @@ input[type=range]{width:100%;accent-color:var(--gold);cursor:pointer;height:22px
     <div id="book-cleared"></div>
     <div class="sec-hd" style="color:var(--red);border-color:#602020;margin-top:14px">👻 ぼうくるぼ</div>
     <div id="book-grave"></div>
+  </div>
+  <div style="padding:12px 16px 0">
+    <button class="btn btn-gold btn-w" style="font-size:13px" onclick="shareBook()">𝕏 ステータスをシェア</button>
   </div>
   <div class="bnav">
     <button class="bnav-btn" id="bnav2-main" onclick="goMain()">
@@ -1315,6 +1319,54 @@ function shareX(game, lv, exp, badge) {
     `EXP＋${exp}  クリア${cl}本目`,
     ``,
     `#ぼうけんのしょ #積みゲー消化`,
+    `https://osakenpiro.github.io/boukennosho`,
+  ].join('\n');
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(txt)}`,'_blank','width=560,height=420');
+}
+
+// ── クエスト画面シェア ──────────────────
+function shareQuest() {
+  const { lv } = getLvInfo(S.hero.exp);
+  const badge = heroTitle(S.hero.stats, S.grave.filter(g=>g.status==='cleared').length);
+  const active = S.games;
+  if (!active.length) {
+    alert('冒険中のゲームがありません');
+    return;
+  }
+  const lines = [
+    `⚔️ ぼうけんのしょ`,
+    ``,
+    `Lv.${lv}「${badge}」が冒険中！`,
+    ``,
+  ];
+  active.forEach((g, i) => {
+    const { remain } = calcHP(g);
+    const m = MNAMES[g.member ?? i % 3];
+    lines.push(`${MEMBERS[g.member ?? i % 3]} ${m}「${g.title}」あと${remain}日`);
+  });
+  lines.push(``);
+  lines.push(`#ぼうけんのしょ #積みゲー消化`);
+  lines.push(`https://osakenpiro.github.io/boukennosho`);
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(lines.join('\n'))}`,'_blank','width=560,height=420');
+}
+
+// ── ぼうけんのしょ画面シェア ───────────
+function shareBook() {
+  const { lv } = getLvInfo(S.hero.exp);
+  const cl = S.grave.filter(g=>g.status==='cleared').length;
+  const badge = heroTitle(S.hero.stats, cl);
+  const st = S.hero.stats;
+  const txt = [
+    `📖 ぼうけんのしょ`,
+    ``,
+    `Lv.${lv}「${badge}」`,
+    `クリア ${cl}本`,
+    ``,
+    `⚔ ちから ${st.power}  🧠 かしこさ ${st.wisdom}`,
+    `💨 すばやさ ${st.speed}  🍀 うんのよさ ${st.luck}`,
+    ``,
+    `#ぼうけんのしょ #積みゲー消化`,
+    `https://osakenpiro.github.io/boukennosho`,
   ].join('\n');
   window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(txt)}`,'_blank','width=560,height=420');
 }
